@@ -424,83 +424,84 @@ type complexErrorOther struct {
 	Message string
 }
 
-func (c *complexErrorOther) As(e any) bool {
-	if ce, ok := e.(**complexError); ok {
-		*ce = &complexError{
-			Message: c.Message,
-		}
-		return true
-	}
-	return false
-}
-
-func (c *complexErrorOther) Error() string {
-	return c.Message
-}
-
-func (c *complexErrorOther) ComplexMessage() string {
-	return c.Message
-}
-
-func (*functionSuite) TestHasType(c *gc.C) {
-	complexErr := &complexError{Message: "complex error message"}
-	wrapped1 := fmt.Errorf("wrapping1: %w", complexErr)
-	wrapped2 := fmt.Errorf("wrapping2: %w", wrapped1)
-
-	c.Assert(errors.HasType[*complexError](complexErr), gc.Equals, true)
-	c.Assert(errors.HasType[*complexError](wrapped1), gc.Equals, true)
-	c.Assert(errors.HasType[*complexError](wrapped2), gc.Equals, true)
-	c.Assert(errors.HasType[ComplexErrorMessage](wrapped2), gc.Equals, true)
-	c.Assert(errors.HasType[*complexErrorOther](wrapped2), gc.Equals, false)
-	c.Assert(errors.HasType[*complexErrorOther](nil), gc.Equals, false)
-
-	complexErrOther := &complexErrorOther{Message: "another complex error"}
-
-	c.Assert(errors.HasType[*complexError](complexErrOther), gc.Equals, true)
-
-	wrapped2 = fmt.Errorf("wrapping1: %w", complexErrOther)
-	c.Assert(errors.HasType[*complexError](wrapped2), gc.Equals, true)
-}
-
-func (*functionSuite) TestAsType(c *gc.C) {
-	complexErr := &complexError{Message: "complex error message"}
-	wrapped1 := fmt.Errorf("wrapping1: %w", complexErr)
-	wrapped2 := fmt.Errorf("wrapping2: %w", wrapped1)
-
-	ce, ok := errors.AsType[*complexError](complexErr)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(ce.Message, gc.Equals, complexErr.Message)
-
-	ce, ok = errors.AsType[*complexError](wrapped1)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(ce.Message, gc.Equals, complexErr.Message)
-
-	ce, ok = errors.AsType[*complexError](wrapped2)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(ce.Message, gc.Equals, complexErr.Message)
-
-	cem, ok := errors.AsType[ComplexErrorMessage](wrapped2)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(cem.ComplexMessage(), gc.Equals, complexErr.Message)
-
-	ceo, ok := errors.AsType[*complexErrorOther](wrapped2)
-	c.Assert(ok, gc.Equals, false)
-	c.Assert(ceo, gc.Equals, (*complexErrorOther)(nil))
-
-	ceo, ok = errors.AsType[*complexErrorOther](nil)
-	c.Assert(ok, gc.Equals, false)
-	c.Assert(ceo, gc.Equals, (*complexErrorOther)(nil))
-
-	complexErrOther := &complexErrorOther{Message: "another complex error"}
-	ce, ok = errors.AsType[*complexError](complexErrOther)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(ce.Message, gc.Equals, complexErrOther.Message)
-
-	wrapped2 = fmt.Errorf("wrapping1: %w", complexErrOther)
-	ce, ok = errors.AsType[*complexError](wrapped2)
-	c.Assert(ok, gc.Equals, true)
-	c.Assert(ce.Message, gc.Equals, complexErrOther.Message)
-}
+//
+//func (c *complexErrorOther) As(e any) bool {
+//	if ce, ok := e.(**complexError); ok {
+//		*ce = &complexError{
+//			Message: c.Message,
+//		}
+//		return true
+//	}
+//	return false
+//}
+//
+//func (c *complexErrorOther) Error() string {
+//	return c.Message
+//}
+//
+//func (c *complexErrorOther) ComplexMessage() string {
+//	return c.Message
+//}
+//
+//func (*functionSuite) TestHasType(c *gc.C) {
+//	complexErr := &complexError{Message: "complex error message"}
+//	wrapped1 := fmt.Errorf("wrapping1: %w", complexErr)
+//	wrapped2 := fmt.Errorf("wrapping2: %w", wrapped1)
+//
+//	c.Assert(errors.HasType[*complexError](complexErr), gc.Equals, true)
+//	c.Assert(errors.HasType[*complexError](wrapped1), gc.Equals, true)
+//	c.Assert(errors.HasType[*complexError](wrapped2), gc.Equals, true)
+//	c.Assert(errors.HasType[ComplexErrorMessage](wrapped2), gc.Equals, true)
+//	c.Assert(errors.HasType[*complexErrorOther](wrapped2), gc.Equals, false)
+//	c.Assert(errors.HasType[*complexErrorOther](nil), gc.Equals, false)
+//
+//	complexErrOther := &complexErrorOther{Message: "another complex error"}
+//
+//	c.Assert(errors.HasType[*complexError](complexErrOther), gc.Equals, true)
+//
+//	wrapped2 = fmt.Errorf("wrapping1: %w", complexErrOther)
+//	c.Assert(errors.HasType[*complexError](wrapped2), gc.Equals, true)
+//}
+//
+//func (*functionSuite) TestAsType(c *gc.C) {
+//	complexErr := &complexError{Message: "complex error message"}
+//	wrapped1 := fmt.Errorf("wrapping1: %w", complexErr)
+//	wrapped2 := fmt.Errorf("wrapping2: %w", wrapped1)
+//
+//	ce, ok := errors.AsType[*complexError](complexErr)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(ce.Message, gc.Equals, complexErr.Message)
+//
+//	ce, ok = errors.AsType[*complexError](wrapped1)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(ce.Message, gc.Equals, complexErr.Message)
+//
+//	ce, ok = errors.AsType[*complexError](wrapped2)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(ce.Message, gc.Equals, complexErr.Message)
+//
+//	cem, ok := errors.AsType[ComplexErrorMessage](wrapped2)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(cem.ComplexMessage(), gc.Equals, complexErr.Message)
+//
+//	ceo, ok := errors.AsType[*complexErrorOther](wrapped2)
+//	c.Assert(ok, gc.Equals, false)
+//	c.Assert(ceo, gc.Equals, (*complexErrorOther)(nil))
+//
+//	ceo, ok = errors.AsType[*complexErrorOther](nil)
+//	c.Assert(ok, gc.Equals, false)
+//	c.Assert(ceo, gc.Equals, (*complexErrorOther)(nil))
+//
+//	complexErrOther := &complexErrorOther{Message: "another complex error"}
+//	ce, ok = errors.AsType[*complexError](complexErrOther)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(ce.Message, gc.Equals, complexErrOther.Message)
+//
+//	wrapped2 = fmt.Errorf("wrapping1: %w", complexErrOther)
+//	ce, ok = errors.AsType[*complexError](wrapped2)
+//	c.Assert(ok, gc.Equals, true)
+//	c.Assert(ce.Message, gc.Equals, complexErrOther.Message)
+//}
 
 func ExampleHide() {
 	myConstError := errors.ConstError("I don't want to be fmt printed")
@@ -522,24 +523,25 @@ func (m *MyError) Error() string {
 	return m.Message
 }
 
-func ExampleHasType() {
-	myErr := &MyError{Message: "these are not the droids you're looking for"}
-	err := fmt.Errorf("wrapped: %w", myErr)
-	is := errors.HasType[*MyError](err)
-	fmt.Println(is)
-
-	// Output:
-	// true
-}
-
-func ExampleAsType() {
-	myErr := &MyError{Message: "these are not the droids you're looking for"}
-	err := fmt.Errorf("wrapped: %w", myErr)
-	myErr, is := errors.AsType[*MyError](err)
-	fmt.Println(is)
-	fmt.Println(myErr.Message)
-
-	// Output:
-	// true
-	// these are not the droids you're looking for
-}
+//
+//func ExampleHasType() {
+//	myErr := &MyError{Message: "these are not the droids you're looking for"}
+//	err := fmt.Errorf("wrapped: %w", myErr)
+//	is := errors.HasType[*MyError](err)
+//	fmt.Println(is)
+//
+//	// Output:
+//	// true
+//}
+//
+//func ExampleAsType() {
+//	myErr := &MyError{Message: "these are not the droids you're looking for"}
+//	err := fmt.Errorf("wrapped: %w", myErr)
+//	myErr, is := errors.AsType[*MyError](err)
+//	fmt.Println(is)
+//	fmt.Println(myErr.Message)
+//
+//	// Output:
+//	// true
+//	// these are not the droids you're looking for
+//}

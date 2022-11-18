@@ -359,10 +359,10 @@ func Is(err, target error) bool {
 // Or
 //
 //  if HasType[*MyError](err) {}
-func HasType[T error](err error) bool {
-	_, rval := AsType[T](err)
-	return rval
-}
+//func HasType[T error](err error) bool {
+//	_, rval := AsType[T](err)
+//	return rval
+//}
 
 // As is a proxy for the As function in Go's standard `errors` library
 // (pkg.go.dev/errors).
@@ -393,20 +393,20 @@ func As(err error, target interface{}) bool {
 //  if pathError, ok := errors.AsType[*fs.PathError](err); ok {
 //      fmt.Println("Failed at path:", pathError.Path)
 //  }
-func AsType[T error](err error) (T, bool) {
-	for err != nil {
-		if e, is := err.(T); is {
-			return e, true
-		}
-		var res T
-		if x, ok := err.(interface{ As(any) bool }); ok && x.As(&res) {
-			return res, true
-		}
-		err = stderrors.Unwrap(err)
-	}
-	var zero T
-	return zero, false
-}
+//func AsType[T error](err error) (T, bool) {
+//	for err != nil {
+//		if e, is := err.(T); is {
+//			return e, true
+//		}
+//		var res T
+//		if x, ok := err.(interface{ As(any) bool }); ok && x.As(&res) {
+//			return res, true
+//		}
+//		err = stderrors.Unwrap(err)
+//	}
+//	var zero T
+//	return zero, false
+//}
 
 // SetLocation takes a given error and records where in the stack SetLocation
 // was called from and returns the wrapped error with the location information
