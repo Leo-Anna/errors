@@ -43,7 +43,7 @@ func getLocation(callDepth int) (string, int) {
 		return "", 0
 	}
 	frame, _ := runtime.CallersFrames(rpc).Next()
-	return frame.File, frame.Line
+	return frame.File + ":" + frame.Function, frame.Line
 }
 
 // Trace adds the location of the Trace call to the stack.  The Cause of the
