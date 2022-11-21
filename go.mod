@@ -1,3 +1,3 @@
-module github.com/Leo-Anna/errors
+module github.com/xiaozhuang/errors
 
 go 1.16
