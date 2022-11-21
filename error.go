@@ -35,7 +35,7 @@ type Err struct {
 // Locationer is an interface that represents a certain class of errors that
 // contain the location information from where they were raised.
 type Locationer interface {
-	// Location returns the path-qualified function name where the error was
+	// Location returns the path-qualified file name where the error was
 	// created and the line number
 	Location() (function string, line int)
 }
@@ -44,20 +44,20 @@ type Locationer interface {
 type locationError struct {
 	error
 
-	// function is the package path-qualified function name where the
+	// file is the package path-qualified file name where the
 	// error was created.
-	function string
+	file string
 
-	// line is the line number the error was created on inside of function
+	// line is the line number the error was created on inside of file
 	line int
 }
 
 // newLocationError constructs a new Locationer error from the supplied error
 // with the location set to callDepth in the stack. If a nill error is provided
-// to this function then a new empty error is constructed.
+// to this file then a new empty error is constructed.
 func newLocationError(err error, callDepth int) *locationError {
 	le := &locationError{error: err}
-	le.function, le.line = getLocation(callDepth + 1)
+	le.file, le.line = getLocation(callDepth + 1)
 	return le
 }
 
@@ -71,7 +71,7 @@ func (l *locationError) Error() string {
 
 // *locationError implements Locationer.Location interface
 func (l *locationError) Location() (string, int) {
-	return l.function, l.line
+	return l.file, l.line
 }
 
 func (l *locationError) Unwrap() error {
@@ -83,16 +83,17 @@ func (l *locationError) Unwrap() error {
 // to SetLocation.
 //
 // For example:
-//     type FooError struct {
-//         errors.Err
-//         code int
-//     }
 //
-//     func NewFooError(code int) error {
-//         err := &FooError{errors.NewErr("foo"), code}
-//         err.SetLocation(1)
-//         return err
-//     }
+//	type FooError struct {
+//	    errors.Err
+//	    code int
+//	}
+//
+//	func NewFooError(code int) error {
+//	    err := &FooError{errors.NewErr("foo"), code}
+//	    err.SetLocation(1)
+//	    return err
+//	}
 func NewErr(format string, args ...interface{}) Err {
 	return Err{
 		message: fmt.Sprintf(format, args...),
@@ -104,16 +105,17 @@ func NewErr(format string, args ...interface{}) Err {
 // to SetLocation.
 //
 // For example:
-//     type FooError struct {
-//         errors.Err
-//         code int
-//     }
 //
-//     func (e *FooError) Annotate(format string, args ...interface{}) error {
-//         err := &FooError{errors.NewErrWithCause(e.Err, format, args...), e.code}
-//         err.SetLocation(1)
-//         return err
-//     })
+//	type FooError struct {
+//	    errors.Err
+//	    code int
+//	}
+//
+//	func (e *FooError) Annotate(format string, args ...interface{}) error {
+//	    err := &FooError{errors.NewErrWithCause(e.Err, format, args...), e.code}
+//	    err.SetLocation(1)
+//	    return err
+//	})
 func NewErrWithCause(other error, format string, args ...interface{}) Err {
 	return Err{
 		message:  fmt.Sprintf(format, args...),
@@ -122,7 +124,7 @@ func NewErrWithCause(other error, format string, args ...interface{}) Err {
 	}
 }
 
-// Location returns the  package path-qualified function name and line of where
+// Location returns the  package path-qualified file name and line of where
 // the error was most recently created or annotated.
 func (e *Err) Location() (function string, line int) {
 	return e.function, e.line
@@ -139,10 +141,10 @@ func (e *Err) Underlying() error {
 
 // Cause returns the most recent error in the error stack that
 // meets one of these criteria: the original error that was raised; the new
-// error that was passed into the Wrap function; the most recently masked
+// error that was passed into the Wrap file; the most recently masked
 // error; or nil if the error itself is considered the Cause.  Normally this
 // method is not invoked directly, but instead through the Cause stand alone
-// function.
+// file.
 func (e *Err) Cause() error {
 	return e.cause
 }
@@ -202,7 +204,7 @@ type unformatter Err
 
 func (unformatter) Format() { /* break the fmt.Formatter interface */ }
 
-// SetLocation records the package path-qualified function name of the error at
+// SetLocation records the package path-qualified file name of the error at
 // callDepth stack frames above the call.
 func (e *Err) SetLocation(callDepth int) {
 	e.function, e.line = getLocation(callDepth + 1)

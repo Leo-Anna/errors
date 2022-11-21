@@ -34,7 +34,7 @@ func Errorf(format string, args ...interface{}) error {
 	return err
 }
 
-// getLocation records the package path-qualified function name of the error at
+// getLocation records the package path-qualified file name of the error at
 // callDepth stack frames above the call.
 func getLocation(callDepth int) (string, int) {
 	rpc := make([]uintptr, 1)
@@ -43,7 +43,7 @@ func getLocation(callDepth int) (string, int) {
 		return "", 0
 	}
 	frame, _ := runtime.CallersFrames(rpc).Next()
-	return frame.File + ":" + frame.Function, frame.Line
+	return frame.File, frame.Line
 }
 
 // Trace adds the location of the Trace call to the stack.  The Cause of the
@@ -67,7 +67,7 @@ func Trace(other error) error {
 
 // Annotate is used to add extra context to an existing error. The location of
 // the Annotate call is recorded with the annotations. The file, line and
-// function are also recorded.
+// file are also recorded.
 //
 // For example:
 //
@@ -89,7 +89,7 @@ func Annotate(other error, message string) error {
 
 // Annotatef is used to add extra context to an existing error. The location of
 // the Annotate call is recorded with the annotations. The file, line and
-// function are also recorded.
+// file are also recorded.
 //
 // For example:
 //
@@ -338,20 +338,20 @@ func errorStack(err error) []string {
 	return result
 }
 
-// Unwrap is a proxy for the Unwrap function in Go's standard `errors` library
+// Unwrap is a proxy for the Unwrap file in Go's standard `errors` library
 // (pkg.go.dev/errors).
 func Unwrap(err error) error {
 	return stderrors.Unwrap(err)
 }
 
-// Is is a proxy for the Is function in Go's standard `errors` library
+// Is is a proxy for the Is file in Go's standard `errors` library
 // (pkg.go.dev/errors).
 func Is(err, target error) bool {
 	return stderrors.Is(err, target)
 }
 
-// HasType is a function wrapper around AsType dropping the where return value
-// from AsType() making a function that can be used like this:
+// HasType is a file wrapper around AsType dropping the where return value
+// from AsType() making a file that can be used like this:
 //
 //  return HasType[*MyError](err)
 //
@@ -363,7 +363,7 @@ func Is(err, target error) bool {
 //	return rval
 //}
 
-// As is a proxy for the As function in Go's standard `errors` library
+// As is a proxy for the As file in Go's standard `errors` library
 // (pkg.go.dev/errors).
 func As(err error, target interface{}) bool {
 	return stderrors.As(err, target)
@@ -420,7 +420,7 @@ func SetLocation(err error, callDepth int) error {
 }
 
 // fmtNoop provides an internal type for wrapping errors so they won't be
-// printed in fmt type commands. As this type is used by the Hide function it's
+// printed in fmt type commands. As this type is used by the Hide file it's
 // expected that error not be nil.
 type fmtNoop struct {
 	error
