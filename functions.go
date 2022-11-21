@@ -14,8 +14,8 @@ import (
 // the location that the error is created.
 //
 // For example:
-//    return errors.New("validation failed")
 //
+//	return errors.New("validation failed")
 func New(message string) error {
 	err := &Err{message: message}
 	err.SetLocation(1)
@@ -26,8 +26,8 @@ func New(message string) error {
 // error is created.  This should be a drop in replacement for fmt.Errorf.
 //
 // For example:
-//    return errors.Errorf("validation failed: %s", message)
 //
+//	return errors.Errorf("validation failed: %s", message)
 func Errorf(format string, args ...interface{}) error {
 	err := &Err{message: fmt.Sprintf(format, args...)}
 	err.SetLocation(1)
@@ -43,7 +43,7 @@ func getLocation(callDepth int) (string, int) {
 		return "", 0
 	}
 	frame, _ := runtime.CallersFrames(rpc).Next()
-	return frame.Function, frame.Line
+	return frame.File, frame.Line
 }
 
 // Trace adds the location of the Trace call to the stack.  The Cause of the
@@ -51,10 +51,10 @@ func getLocation(callDepth int) (string, int) {
 // nil, the result will be nil.
 //
 // For example:
-//   if err := SomeFunc(); err != nil {
-//       return errors.Trace(err)
-//   }
 //
+//	if err := SomeFunc(); err != nil {
+//	    return errors.Trace(err)
+//	}
 func Trace(other error) error {
 	//return SetLocation(other, 2)
 	if other == nil {
@@ -70,10 +70,10 @@ func Trace(other error) error {
 // function are also recorded.
 //
 // For example:
-//   if err := SomeFunc(); err != nil {
-//       return errors.Annotate(err, "failed to frombulate")
-//   }
 //
+//	if err := SomeFunc(); err != nil {
+//	    return errors.Annotate(err, "failed to frombulate")
+//	}
 func Annotate(other error, message string) error {
 	if other == nil {
 		return nil
@@ -92,10 +92,10 @@ func Annotate(other error, message string) error {
 // function are also recorded.
 //
 // For example:
-//   if err := SomeFunc(); err != nil {
-//       return errors.Annotatef(err, "failed to frombulate the %s", arg)
-//   }
 //
+//	if err := SomeFunc(); err != nil {
+//	    return errors.Annotatef(err, "failed to frombulate the %s", arg)
+//	}
 func Annotatef(other error, format string, args ...interface{}) error {
 	if other == nil {
 		return nil
@@ -116,8 +116,7 @@ func Annotatef(other error, format string, args ...interface{}) error {
 //
 // For example:
 //
-//    defer DeferredAnnotatef(&err, "failed to frombulate the %s", arg)
-//
+//	defer DeferredAnnotatef(&err, "failed to frombulate the %s", arg)
 func DeferredAnnotatef(err *error, format string, args ...interface{}) {
 	if *err == nil {
 		return
@@ -135,11 +134,11 @@ func DeferredAnnotatef(err *error, format string, args ...interface{}) {
 // stored in the error stack.
 //
 // For example:
-//   if err := SomeFunc(); err != nil {
-//       newErr := &packageError{"more context", private_value}
-//       return errors.Wrap(err, newErr)
-//   }
 //
+//	if err := SomeFunc(); err != nil {
+//	    newErr := &packageError{"more context", private_value}
+//	    return errors.Wrap(err, newErr)
+//	}
 func Wrap(other, newDescriptive error) error {
 	err := &Err{
 		previous: other,
@@ -153,10 +152,10 @@ func Wrap(other, newDescriptive error) error {
 // of the Wrap call is also stored in the error stack.
 //
 // For example:
-//   if err := SomeFunc(); err != nil {
-//       return errors.Wrapf(err, simpleErrorType, "invalid value %q", value)
-//   }
 //
+//	if err := SomeFunc(); err != nil {
+//	    return errors.Wrapf(err, simpleErrorType, "invalid value %q", value)
+//	}
 func Wrapf(other, newDescriptive error, format string, args ...interface{}) error {
 	err := &Err{
 		message:  fmt.Sprintf(format, args...),
@@ -235,7 +234,7 @@ var (
 // Details returns information about the stack of errors wrapped by err, in
 // the format:
 //
-// 	[{filename:99: error one} {otherfile:55: cause of error one}]
+//	[{filename:99: error one} {otherfile:55: cause of error one}]
 //
 // This is a terse alternative to ErrorStack as it returns a single line.
 func Details(err error) string {
@@ -278,12 +277,12 @@ func Details(err error) string {
 // each line represents one entry in the annotation stack. The full filename
 // from the call stack is used in the output.
 //
-//     first error
-//     github.com/juju/errors/annotation_test.go:193:
-//     github.com/juju/errors/annotation_test.go:194: annotation
-//     github.com/juju/errors/annotation_test.go:195:
-//     github.com/juju/errors/annotation_test.go:196: more context
-//     github.com/juju/errors/annotation_test.go:197:
+//	first error
+//	github.com/juju/errors/annotation_test.go:193:
+//	github.com/juju/errors/annotation_test.go:194: annotation
+//	github.com/juju/errors/annotation_test.go:195:
+//	github.com/juju/errors/annotation_test.go:196: more context
+//	github.com/juju/errors/annotation_test.go:197:
 func ErrorStack(err error) string {
 	return strings.Join(errorStack(err), "\n")
 }
